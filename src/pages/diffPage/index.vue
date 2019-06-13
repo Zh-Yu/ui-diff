@@ -4,16 +4,17 @@
     <div class="origin">
       <div class="title">
         ui图片
-        <input type="text" v-model="originImageName">
+        <input type="file" accept="image/*" @change="selectUIPic">
       </div>
-      <img :src="originImage" alt="" ref="originImage" @load="loadImage"/>
+      <img :src="UIPicSrc" alt="" ref="originImage" @load="loadUIImage">
     </div>
     <div class="current">
       <div class="title">
         前端图片
-        <input type="text" v-model="currentImageName">
+        <input type="text" v-model="feLink" placeholder="请输入对应的链接地址">
+        <button @click="confirm">确认</button>
       </div>
-      <img :src="currentImage" alt="" ref="currentImage" @load="loadImage"/>
+      <img :src="FEPicSrc" alt="" ref="currentImage" @load="loadFEImage"/>
     </div>
   </div>
   <div class="diff">
@@ -24,35 +25,62 @@
 </template>
 
 <script>
+import api from '@api/axios.js'
 export default {
   data () {
     return {
-      originImageName: '',
-      currentImageName: '',
+      UIPicSrc: '',
+      FEPicSrc: '',
+      feLink: '',
+      ImageWidth: 0,
+      ImageHeight: 0,
       imageDatas: []
     }
   },
-  computed: {
-    originImage () {
-      return `../../../static/origin/${this.originImageName}.png`
-    },
-    currentImage () {
-      return `../../../static/current/${this.currentImageName}.png`
-    }
-  },
   methods: {
-    loadImage (e) {
-      let imgPath = e.path[0].currentSrc
+    selectUIPic (e) {
+      var reader = new FileReader()
+      reader.readAsDataURL(e.srcElement.files[0])
+      reader.onload = (e) => {
+        this.UIPicSrc = e.target.result
+      }
+    },
+    loadUIImage (e) {
+      let imgPath = e.target.currentSrc
       let canvas = document.createElement('canvas')
       let ctx = canvas.getContext('2d')
       let image = new Image()
       image.src = imgPath
       setTimeout(() => {
-        canvas.width = image.width
-        canvas.height = image.height
+        this.ImageWidth = image.width
+        this.ImageHeight = image.height
         ctx.drawImage(image, 0, 0)
-        this.imageDatas.push(ctx.getImageData(0, 0, image.width, image.height))
+        this.imageDatas.push(ctx.getImageData(0, 0, this.ImageWidth, this.ImageHeight))
       }, 500)
+    },
+    loadFEImage (e) {
+      let imgPath = e.target.currentSrc
+      let canvas = document.createElement('canvas')
+      let ctx = canvas.getContext('2d')
+      let image = new Image()
+      image.src = imgPath
+      setTimeout(() => {
+        ctx.drawImage(image, 0, 0)
+        this.imageDatas.push(ctx.getImageData(0, 0, this.ImageWidth, this.ImageHeight))
+      }, 500)
+    },
+    confirm () {
+      // 发请求通知node截图带width,height参数
+      api({
+        url: 'localhost: 3000',
+        params: {
+          width: this.ImageWidth,
+          height: this.ImageHeight,
+          url: this.feLink
+        }
+      }).then(res => {
+        console.log(res)
+      })
     }
   },
   watch: {
@@ -93,6 +121,9 @@ export default {
     width: 50%;
     .title {
       margin-bottom: 20px;
+    }
+    img {
+      width: 100%;
     }
   }
   .canvas {

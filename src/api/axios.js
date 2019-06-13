@@ -16,38 +16,25 @@ import qs from 'qs'
  */
 
 const ajax = function (config) {
-  const configs = config || {}
-  if (!configs.url) {
+  if (!config.url) {
     return
   }
-
-  axios.defaults.params = {}
-  axios.defaults.data = {}
-
-  if (configs.method === 'post') {
-    let postData = configs.data || {}
-    const tempData = {
-      ...postData
-    }
-    if (configs.headers && configs.headers['Content-Type'] &&
-      configs.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
-      postData = qs.stringify(tempData)
-    }
-    axios.defaults.data = postData
-  } else if (configs.method === 'get') {
-    axios.defaults.params = configs.data || {}
+  const params = config.method === 'get' ? {
+    data: qs.stringify({...config.params})
+  } : {
+    params: config.params
   }
-
   return new Promise((resolve, reject) => {
     axios({
-      method: configs.method || 'get',
-      url: configs.url,
-      headers: configs.headers || {
+      methods: config.method || 'get',
+      url: config.url,
+      headers: config.headers || {
         'Content-Type': 'application/json;charset=UTF-8'
       },
-      withCredentials: configs.withCredentials || false,
-      timeout: configs.time || 10 * 1000,
-      responseType: configs.dataType || 'json'
+      withCredentials: config.withCredentials || false,
+      timeout: config.time || 10 * 1000,
+      responseType: config.dataType || 'json',
+      ...params
     }).then(res => {
       if (res.code === 200) {
         resolve(res.data)

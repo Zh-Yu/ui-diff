@@ -72,7 +72,7 @@ export default {
     confirm () {
       // 发请求通知node截图带width,height参数
       api({
-        url: 'localhost: 3000',
+        url: 'http://account.jetbrains.com:3000',
         params: {
           width: this.ImageWidth,
           height: this.ImageHeight,

@@ -21,8 +21,8 @@
 export default {
   data () {
     return {
-      originImage: '../../static/origin/ic_hot.png',
-      currentImage: '../../static/current/ic_new.png',
+      originImage: '../../../static/origin/ic_hot.png',
+      currentImage: '../../../static/current/ic_new.png',
       imageDatas: []
     }
   },
@@ -41,23 +41,23 @@ export default {
   },
   mounted () {
     setTimeout(() => {
-      console.log(this.imageDatas)
       const originPixel = this.imageDatas[0].data
       const currentPixel = this.imageDatas[1].data
       const diffData = originPixel.map((item, index) => {
-        return originPixel[index] - currentPixel[index] + 90
+        return originPixel[index] - currentPixel[index]
       })
       let canvas = document.getElementById('diff_image')
       let ctx = canvas.getContext('2d')
       canvas.width = this.imageDatas[0].width
       canvas.height = this.imageDatas[0].height
       let result = ctx.createImageData(canvas.width, canvas.height)
-      result.data.forEach((element, index) => {
-        result.data[index + 0] = diffData[index + 0]
-        result.data[index + 1] = diffData[index + 1]
-        result.data[index + 2] = diffData[index + 2]
-        result.data[index + 3] = diffData[index + 3]
-      })
+      for (let i = 0; i <= result.data.length - 4; i = i + 4) {
+        let pixelColor = Math.sqrt(diffData[i] * diffData[i] + diffData[i + 1] * diffData[i + 1] + diffData[i + 2] * diffData[i + 2])
+        result.data[i + 0] = 255 - pixelColor
+        result.data[i + 1] = 255 - pixelColor
+        result.data[i + 2] = 255 - pixelColor
+        result.data[i + 3] = 255
+      }
       ctx.putImageData(result, 0, 0)
     }, 1000)
   }

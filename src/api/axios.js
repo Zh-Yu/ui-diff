@@ -32,14 +32,14 @@ const ajax = function (config) {
         'Content-Type': 'application/json;charset=UTF-8'
       },
       withCredentials: config.withCredentials || false,
-      timeout: config.time || 10 * 1000,
+      timeout: config.time || 100 * 1000,
       responseType: config.dataType || 'json',
       ...params
     }).then(res => {
-      if (res.code === 200) {
-        resolve(res.data)
+      if (res.status === 200) {
+        resolve(res)
       } else {
-        reject(res.code)
+        reject(res.status)
       }
     }).catch(error => {
       reject(error)

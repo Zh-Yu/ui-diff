@@ -4,16 +4,17 @@
     <div class="origin">
       <div class="title">
         ui图片
-        <input type="file" accept="image/*" @change="selectUIPic">
       </div>
+      <input type="file" accept="image/*" @change="selectUIPic">
       <img :src="UIPicSrc" alt="" ref="originImage">
     </div>
     <div class="current">
       <div class="title">
         前端图片
-        <input type="text" v-model="feLink" placeholder="请输入对应的链接地址">
-        <button @click="confirm">确认</button>
       </div>
+      <input type="text" v-model="feLink" placeholder="请输入对应的链接地址">
+      <button @click="confirm">确认</button>
+      <button @click="goto">转到</button>
       <img :src="FEPicSrc" alt="" ref="currentImage"/>
     </div>
   </div>
@@ -104,6 +105,9 @@ export default {
         }
       }
       ctx.putImageData(result, 0, 0)
+    },
+    goto () {
+      window.open(this.feLink)
     }
   }
 }
@@ -112,21 +116,52 @@ export default {
 <style lang="scss" scoped>
 .index {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  .origin, .current, .diff {
-    width: 50%;
+  align-items: flex-start;
+  justify-content: space-around;
+  margin-bottom: 240px;
+  .origin, .current {
+    width: calc(50% - 300px);
     .title {
-      margin-bottom: 20px;
+      margin-bottom: 30px;
+      font-size: 60px;
+      font-weight: bold;
     }
     img {
       width: 100%;
     }
+    input {
+      height: 100px;
+      margin-bottom: 30px;
+    }
   }
-  .canvas {
-    margin: 0;
-    border: 0;
-    padding: 0;
+  .origin {
+    input {
+      width: 620px;
+    }
   }
+  .current {
+    input {
+      width: 1300px;
+    }
+  }
+}
+.diff {
+  .title {
+    margin-bottom: 30px;
+    font-size: 60px;
+    font-weight: bold;
+  }
+}
+.canvas {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+button {
+  width: 200px;
+  margin-bottom: 30px;
+  background-color: #eee;
+  border-radius: 20px;
+  height: 100px;
 }
 </style>

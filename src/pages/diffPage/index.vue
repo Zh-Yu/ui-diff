@@ -42,14 +42,11 @@ export default {
   },
   methods: {
     selectUIPic (e) {
-      var reader = new FileReader()
-      reader.readAsDataURL(e.srcElement.files[0])
-      reader.onload = (e) => {
-        if (this.UIPicSrc !== e.target.result) {
-          this.UIPicSrc = e.target.result
-          this.loadImage(this.UIPicSrc, 0)
-        }
+      let file = e.srcElement.files[0]
+      if (this.UIPicSrc !== window.URL.createObjectURL(file)) {
+        this.UIPicSrc = window.URL.createObjectURL(file)
       }
+      this.loadImage(this.UIPicSrc, 0)
     },
     confirm () {
       // 发请求通知node截图带width,height参数
@@ -64,9 +61,9 @@ export default {
           height: this.ImageHeight,
           url: this.feLink
         },
-        dataType: 'arraybuffer'
+        dataType: 'blob'
       }).then(res => {
-        this.FEPicSrc = 'data:image/png;base64,' + btoa(new Uint8Array(res.data).reduce((data, byte) => data + String.fromCharCode(byte), ''))
+        this.FEPicSrc = window.URL.createObjectURL(res.data)
         this.loadImage(this.FEPicSrc, 1)
       })
     },
@@ -78,8 +75,11 @@ export default {
       image.onload = async () => {
         this.ImageWidth = image.width
         this.ImageHeight = image.height
+        canvas.width = this.ImageWidth > 0 ? this.ImageWidth : 0
+        canvas.height = this.ImageHeight > 0 ? this.ImageHeight : 0
         await ctx.drawImage(image, 0, 0, this.ImageWidth, this.ImageHeight)
         this.imageDatas[index] = await ctx.getImageData(0, 0, this.ImageWidth, this.ImageHeight)
+        console.log(this.imageDatas[index])
       }
     },
     diff () {
@@ -92,10 +92,11 @@ export default {
         const originPixel = this.imageDatas[0].data
         const currentPixel = this.imageDatas[1].data
         const diffData = originPixel.map((item, index) => {
-          return Math.abs(currentPixel[index] - originPixel[index])
+          return currentPixel[index] - originPixel[index]
         })
         for (let i = 0; i <= result.data.length - 4; i = i + 4) {
           let pixelColor = Math.sqrt(diffData[i] * diffData[i] + diffData[i + 1] * diffData[i + 1] + diffData[i + 2] * diffData[i + 2])
+          pixelColor = pixelColor * 255 / 441
           result.data[i + 0] = 255 - pixelColor
           result.data[i + 1] = 255 - pixelColor
           result.data[i + 2] = 255 - pixelColor

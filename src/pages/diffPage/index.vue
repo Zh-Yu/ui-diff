@@ -61,10 +61,13 @@ export default {
           width: this.ImageWidth,
           height: this.ImageHeight,
           url: this.feLink
+          // devices: 是否是异动设备
+          // specialDomToWailt: dom选择器，是否等某元素渲染完成
         },
-        dataType: 'blob'
+        dataType: 'arraybuffer'
       }).then(res => {
-        this.FEPicSrc = window.URL.createObjectURL(res.data)
+        let data = new Blob([res.data])
+        this.FEPicSrc = window.URL.createObjectURL(data)
         this.loadImage(this.FEPicSrc, 1)
       })
     },
@@ -74,13 +77,14 @@ export default {
       let image = new Image()
       image.src = imagePath
       image.onload = async () => {
-        this.ImageWidth = image.width
-        this.ImageHeight = image.height
+        if (index === 0) {
+          this.ImageWidth = image.width
+          this.ImageHeight = image.height
+        }
         canvas.width = this.ImageWidth > 0 ? this.ImageWidth : 0
         canvas.height = this.ImageHeight > 0 ? this.ImageHeight : 0
         await ctx.drawImage(image, 0, 0, this.ImageWidth, this.ImageHeight)
         this.imageDatas[index] = await ctx.getImageData(0, 0, this.ImageWidth, this.ImageHeight)
-        console.log(this.imageDatas[index])
       }
     },
     diff () {
@@ -103,8 +107,8 @@ export default {
           result.data[i + 2] = 255 - pixelColor
           result.data[i + 3] = 255
         }
+        ctx.putImageData(result, 0, 0)
       }
-      ctx.putImageData(result, 0, 0)
     },
     goto () {
       window.open(this.feLink)
@@ -141,7 +145,7 @@ export default {
   }
   .current {
     input {
-      width: 1300px;
+      width: 500px;
     }
   }
 }

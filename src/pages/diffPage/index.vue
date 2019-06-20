@@ -1,32 +1,37 @@
 <template>
-<div>
-  <div class="index">
-    <div class="origin">
-      <div class="title">
-        ui图片
+  <div class="diffUI">
+    <div class="select">
+      <div class="origin">
+        <div>
+          <div class="title">
+            ui图片
+          </div>
+          <input type="file" accept="image/*" @change="selectUIPic">
+        </div>
+        <img :src="UIPicSrc" alt="" ref="originImage">
       </div>
-      <input type="file" accept="image/*" @change="selectUIPic">
-      <img :src="UIPicSrc" alt="" ref="originImage">
+      <div class="current">
+        <div>
+          <div class="title">
+            前端图片
+          </div>
+          <input type="text" v-model="feLink" placeholder="请输入对应的链接地址">
+          <button @click="confirm">确认</button>
+          <button @click="goto">转到</button>
+          <button @click="withCookie = !withCookie" :class="{withCookie}">cookie</button>
+        </div>
+        <img :src="FEPicSrc" alt="" ref="currentImage"/>
+      </div>
     </div>
-    <div class="current">
-      <div class="title">
-        前端图片
+    <div class="diff">
+      <div class="title">diff图片</div>
+      <div>
+        <button @click="diff">比较</button>
+        <button @click="makeDiffResult">生成图片</button>
       </div>
-      <input type="text" v-model="feLink" placeholder="请输入对应的链接地址">
-      <button @click="confirm">确认</button>
-      <button @click="goto">转到</button>
-      <button @click="withCookie = !withCookie" :class="{withCookie}">cookie</button>
-      <img :src="FEPicSrc" alt="" ref="currentImage"/>
+      <canvas ref="diff_image" class="canvas"></canvas>
     </div>
   </div>
-  <div class="diff">
-    <div class="title">diff图片</div>
-    <div>
-      <button @click="diff">比较</button>
-    </div>
-    <canvas ref="diff_image" class="canvas"></canvas>
-  </div>
-</div>
 </template>
 
 <script>
@@ -40,12 +45,14 @@ export default {
       ImageWidth: 0,
       ImageHeight: 0,
       imageDatas: [],
-      withCookie: false
+      withCookie: false,
+      fileName: ''
     }
   },
   methods: {
     selectUIPic (e) {
       let file = e.srcElement.files[0]
+      this.fileName = file.name
       if (this.UIPicSrc !== window.URL.createObjectURL(file)) {
         this.UIPicSrc = window.URL.createObjectURL(file)
       }
@@ -119,26 +126,46 @@ export default {
     },
     goto () {
       window.open(this.feLink)
+    },
+    makeDiffResult () {
+      let canvas = this.$refs['diff_image']
+      var MIME_TYPE = 'image/png'
+      var imgURL = canvas.toDataURL(MIME_TYPE)
+      var dlLink = document.createElement('a')
+      dlLink.download = `${this.fileName}_result.png`
+      dlLink.href = imgURL
+      dlLink.dataset.downloadurl = [MIME_TYPE, dlLink.download, dlLink.href].join(':')
+      document.body.appendChild(dlLink)
+      dlLink.click()
+      document.body.removeChild(dlLink)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.index {
+.diffUI {
+  height: 100%;
   display: flex;
+  margin-left: 100px;
+}
+.select {
+  display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  justify-content: space-around;
-  margin-bottom: 240px;
+  justify-content: space-between;
+  height: 100%;
+  align-items: center;
+  width: 50%;
   .origin, .current {
-    width: calc(50% - 300px);
+    height: 50%;
     .title {
       margin-bottom: 30px;
       font-size: 60px;
       font-weight: bold;
     }
     img {
-      width: 100%;
+      height: calc(100% - 300px);
     }
     input {
       height: 100px;
@@ -160,6 +187,7 @@ export default {
   }
 }
 .diff {
+  flex-grow: 1;
   .title {
     margin-bottom: 30px;
     font-size: 60px;
@@ -172,10 +200,10 @@ export default {
   padding: 0;
 }
 button {
-  width: 200px;
+  width: 300px;
   margin-bottom: 30px;
   background-color: #eee;
   border-radius: 20px;
-  height: 100px;
+  height: 120px;
 }
 </style>

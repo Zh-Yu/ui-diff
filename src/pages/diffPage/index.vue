@@ -15,6 +15,7 @@
       <input type="text" v-model="feLink" placeholder="请输入对应的链接地址">
       <button @click="confirm">确认</button>
       <button @click="goto">转到</button>
+      <button @click="withCookie = !withCookie" :class="{withCookie}">cookie</button>
       <img :src="FEPicSrc" alt="" ref="currentImage"/>
     </div>
   </div>
@@ -38,7 +39,8 @@ export default {
       feLink: '',
       ImageWidth: 0,
       ImageHeight: 0,
-      imageDatas: []
+      imageDatas: [],
+      withCookie: false
     }
   },
   methods: {
@@ -61,9 +63,10 @@ export default {
           width: this.ImageWidth,
           height: this.ImageHeight,
           url: this.feLink
-          // devices: 是否是异动设备
+          // devices: 是否是移动设备
           // specialDomToWailt: dom选择器，是否等某元素渲染完成
         },
+        withCredentials: this.withCookie,
         dataType: 'arraybuffer'
       }).then(res => {
         let data = new Blob([res.data])
@@ -96,6 +99,10 @@ export default {
       if (this.imageDatas.length === 2) {
         const originPixel = this.imageDatas[0].data
         const currentPixel = this.imageDatas[1].data
+        if (originPixel.length !== currentPixel.length) {
+          alert('请重新获取前端图片截图')
+          return
+        }
         const diffData = originPixel.map((item, index) => {
           return currentPixel[index] - originPixel[index]
         })
@@ -146,6 +153,9 @@ export default {
   .current {
     input {
       width: 500px;
+    }
+    .withCookie {
+      background-color: #b6d7a8;
     }
   }
 }

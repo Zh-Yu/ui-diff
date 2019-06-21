@@ -8,17 +8,16 @@
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
-          @select="selectMenu"
-          >
-          <el-menu-item index="1">
+          router>
+          <el-menu-item index="diff">
             <i class="el-icon-menu"></i>
             <span slot="title">diff</span>
           </el-menu-item>
-          <el-menu-item index="2">
+          <el-menu-item index="document">
             <i class="el-icon-document"></i>
-            <span slot="title">文档(wiki)</span>
+            <span slot="title">文档</span>
           </el-menu-item>
-          <el-menu-item index="3">
+          <el-menu-item index="result">
             <i class="el-icon-location"></i>
             <span slot="title">文件名-页面路径</span>
           </el-menu-item>
@@ -36,22 +35,13 @@ export default {
   name: 'App',
   data () {
     return {
-      index: '1'
     }
   },
   methods: {
-    selectMenu (index) {
-      this.index = index
-      switch (index) {
-        case '1':
-          this.$router.push('/diff')
-          break
-        case '2':
-          this.$router.push('/wiki')
-          break
-        case '3':
-          this.$router.push('check_path')
-      }
+  },
+  computed: {
+    index: function () {
+      return this.$route.name
     }
   }
 }

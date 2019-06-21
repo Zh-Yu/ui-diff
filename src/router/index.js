@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import diff from '@/pages/diffPage/index'
-import wiki from '@/pages/wiki/index'
+import document from '@/pages/document/index'
+import result from '@/pages/result/index'
 
 Vue.use(Router)
 
@@ -18,9 +19,14 @@ export default new Router({
       component: diff
     },
     {
-      path: '/wiki',
-      name: 'wiki',
-      component: wiki
+      path: '/document',
+      name: 'document',
+      component: document
+    },
+    {
+      path: '/result',
+      name: 'result',
+      component: result
     }
   ]
 })

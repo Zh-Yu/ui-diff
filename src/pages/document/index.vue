@@ -87,10 +87,10 @@
         <el-table-column
           prop="devTime"
           label="开发时间"
-          width="900"
+          width="1100"
         >
           <template slot-scope="scope">
-            <div class="devTime">
+            <div class="selectTimeContainer">
               <el-date-picker
                 size="large"
                 v-model="scope.row.devTime"
@@ -98,7 +98,7 @@
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-                popper-class="selectDevTime"
+                popper-class="selectTime"
               >
               </el-date-picker>
             </div>
@@ -107,10 +107,10 @@
         <el-table-column
           prop="testTime"
           label="测试时间"
-          width="900"
+          width="1100"
          >
          <template slot-scope="scope">
-            <div class="devTime">
+            <div class="selectTimeContainer">
               <el-date-picker
                 size="large"
                 v-model="scope.row.testTime"
@@ -118,7 +118,7 @@
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-                popper-class="selectDevTime"
+                popper-class="selectTime"
               >
               </el-date-picker>
             </div>
@@ -157,7 +157,18 @@
         <el-table-column
           prop="endTime"
           label="上线时间"
+          width="500"
         >
+          <template slot-scope="scope">
+            <div class="selectTimeContainer">
+              <el-date-picker
+                v-model="scope.row.endTime"
+                type="date"
+                placeholder="选择日期"
+                popper-class="selectSingleTime">
+              </el-date-picker>
+            </div>
+          </template>
         </el-table-column>
         <el-table-column
           label="删除该条"
@@ -193,12 +204,12 @@ export default {
         href: '-'
       }],
       myworkData: [{
-        devTime: '-',
-        testTime: '-',
+        devTime: [],
+        testTime: [],
         dev: false,
         test: false,
         product: false,
-        endTime: '-'
+        endTime: ''
       }],
       wiki_name: '',
       wiki_href: '',
@@ -317,7 +328,7 @@ export default {
     }
   }
   .mywork {
-    .devTime {
+    .selectTimeContainer {
       width: 100%;
       height: 100px;
       div {
@@ -326,7 +337,7 @@ export default {
         line-height: 100px;
         input {
           height: 100px;
-          width: 300px;
+          width: 400px;
           line-height: 100px;
         }
         i {
@@ -337,10 +348,16 @@ export default {
           line-height: 200%;
         }
       }
+      .el-input__inner {
+        margin-left: 20px;
+      }
+      .el-date-editor {
+        text-align: center;
+      }
     }
   }
 }
-.selectDevTime {
+.selectTime, .selectSingleTime {
   width: 1500px !important;
   height: 800px !important;
   .el-date-table__row {
@@ -358,6 +375,13 @@ export default {
   }
   .el-range__close-icon {
     margin-left: 10px;
+  }
+}
+.selectSingleTime {
+  width: 800px !important;
+  .el-picker-panel__content {
+    width: 95%;
+    text-align: center;
   }
 }
 .checkbox {
